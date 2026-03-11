@@ -8,7 +8,7 @@ import { render } from './renderer.js';
 import { generateCard } from './card.js';
 import type { ScanOptions } from './types.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 const HELP_TEXT = `claudeisms - Spotify Wrapped for Claude Code
 
@@ -18,7 +18,8 @@ Options:
   -d, --days <n>    Only scan last N days
   -t, --top <n>     Show top N phrases (default: 10)
   -j, --json        Output as JSON
-  -p, --png <path>  Export a shareable PNG card
+  -p, --png <path>  Save PNG card to custom path (default: claudeisms.png)
+      --no-png      Skip PNG card generation
       --dir <path>  Custom Claude directory
   -h, --help        Show this help
   -v, --version     Show version
@@ -38,6 +39,7 @@ async function main() {
       top: { type: 'string', short: 't' },
       json: { type: 'boolean', short: 'j' },
       png: { type: 'string', short: 'p' },
+      'no-png': { type: 'boolean' },
       dir: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
@@ -111,11 +113,17 @@ async function main() {
     render(results);
   }
 
-  if (values.png) {
+  if (!values['no-png'] && !values.json) {
+    const pngPath = values.png || 'claudeisms.png';
+    const pngBuffer = await generateCard(results);
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(pngPath, pngBuffer);
+    console.log(`\n📸 Share card saved to ${pngPath}`);
+  } else if (values.png) {
     const pngBuffer = await generateCard(results);
     const { writeFileSync } = await import('node:fs');
     writeFileSync(values.png, pngBuffer);
-    console.log(`\nShare card saved to ${values.png}`);
+    console.log(`\n📸 Share card saved to ${values.png}`);
   }
 }
 
