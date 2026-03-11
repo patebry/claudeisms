@@ -23,52 +23,77 @@ claudeisms scans your Claude Code conversation history and generates a beautiful
 
 ## Example Output
 
+> Plain text shown below -- colors and gradients render in your actual terminal.
+
 ```
-  ┌─────────────────────────────────────────────────┐
-  │                                                 │
-  │          ✦  c l a u d e i s m s  ✦              │
-  │                                                 │
-  │        your claude code personality report      │
-  │             scanned 1,247 conversations         │
-  │                                                 │
-  └─────────────────────────────────────────────────┘
+   _____ _                 _      _
+  / ____| |               | |    (_)
+ | |    | | __ _ _   _  __| | ___ _ ___ _ __ ___  ___
+ | |    | |/ _` | | | |/ _` |/ _ \ / __| '_ ` _ \/ __|
+ | |____| | (_| | |_| | (_| |  __/ \__ \ | | | | \__ \
+  \_____|_|\__,_|\__,_|\__,_|\___|_|___/_| |_| |_|___/
 
-  TOP CLAUDEISMS
-  ──────────────────────────────────────────────────
+                  ~ Your Claude Code Wrapped ~
 
-  1. "Let me"                 ████████████████████  347
-  2. "I'll help you"          ██████████████░░░░░░  238
-  3. "You're absolutely right" ███████████░░░░░░░░░  192
-  4. "I apologize"            █████████░░░░░░░░░░░  156
-  5. "Great question"         ████████░░░░░░░░░░░░  139
-  6. "Here's what I'd suggest" ██████░░░░░░░░░░░░░░  104
-  7. "Let me fix that"        █████░░░░░░░░░░░░░░░   87
-  8. "Actually, looking..."   ████░░░░░░░░░░░░░░░░   71
-  9. "Happy to help"          ███░░░░░░░░░░░░░░░░░   53
-  10. "To be thorough"        ██░░░░░░░░░░░░░░░░░░   42
+╭──────────────────────────────────────────────────────────────╮
+│                                                              │
+│                 Feb 9, 2026  →  Mar 11, 2026                 │
+│                                                              │
+│   559  conversations                                         │
+│   8,820  messages from Claude                                │
+│   720,919  words generated                                   │
+│                                                              │
+╰──────────────────────────────────────────────────────────────╯
 
-  YOUR CLAUDE ARCHETYPE
-  ──────────────────────────────────────────────────
+─── TOP CLAUDEISMS ────────────────────────────────────────────
 
-  ╔══════════════════════════════════════╗
-  ║  You're talking to...               ║
-  ║                                     ║
-  ║    ✦ THE EAGER HELPER ✦             ║
-  ║                                     ║
-  ║  Your Claude can't wait to dive in. ║
-  ║  Every message starts with "Let me" ║
-  ║  and ends with offering to do more. ║
-  ╚══════════════════════════════════════╝
+  ★ #1     "Let me check"
+         ████████████████████████ 780  [narration]
 
-  FUN STATS
-  ──────────────────────────────────────────────────
+  ★ #2     "Now let me"
+         ████████████████████░░░░ 647  [narration]
 
-  Apology Index ........... 12.5% of responses (yikes)
-  Verbosity Score ......... 7.3/10 (your Claude is chatty)
-  Code vs Prose ........... 62% code, 38% prose
-  Peak Coding Hour ........ 2:00 AM (night owl detected)
-  Longest Conversation .... 847 messages (Mar 2, a Thursday)
-  Total Tokens Received ... ~4.2M (that's a novel)
+  ★ #3     "Perfect!"
+         █████████████░░░░░░░░░░░ 431  [enthusiasm]
+
+    #4     "Successfully"
+         ████░░░░░░░░░░░░░░░░░░░░ 140  [completion]
+
+    #5     "Great!"
+         █░░░░░░░░░░░░░░░░░░░░░░░ 41  [enthusiasm]
+
+
+─── YOUR ARCHETYPE ────────────────────────────────────────────
+
+╭──────────────────────────────────────────────────────────────╮
+│                                                              │
+│                             🎬                               │
+│                                                              │
+│                        THE NARRATOR                          │
+│           Let me tell you what I am about to do              │
+│                                                              │
+│        Dominant categories: narration, claude-code           │
+│                                                              │
+╰──────────────────────────────────────────────────────────────╯
+
+─── FUN STATS ─────────────────────────────────────────────────
+
+  │  ♥ Claude apologized to you 1 times
+  │  ✔ Claude agreed with you 38 times
+  │  ✎ Average 82 words/message = Thorough
+  │  ↺ Self-corrected 34 times
+  │  ↕ Longest message: 3,694 words
+  │  ↓ Shortest message: "Done." (5 chars)
+
+  │  Code vs Prose
+  │  ████████████████████████████████████
+  │  Code 20%                          Prose 80%
+
+  │  ⌚ Most active hour: 11 AM
+  │  0h ▁▁▁▁▁▁▁▃▅▇▇█▅▃▄▅▆▄▅▄▃▂▂▁ 23h
+
+────────────────────────────────────────────────────────────────
+           claudeisms v0.1.0 · generated Mar 11, 2026
 ```
 
 ## Options
