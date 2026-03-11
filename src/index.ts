@@ -5,6 +5,7 @@ import { getDefaultClaudeDir, scanConversations } from './scanner.js';
 import { parseConversation } from './parser.js';
 import { Analyzer } from './analyzer.js';
 import { render } from './renderer.js';
+import { generateCard } from './card.js';
 import type { ScanOptions } from './types.js';
 
 const VERSION = '0.1.0';
@@ -17,6 +18,7 @@ Options:
   -d, --days <n>    Only scan last N days
   -t, --top <n>     Show top N phrases (default: 10)
   -j, --json        Output as JSON
+  -p, --png <path>  Export a shareable PNG card
       --dir <path>  Custom Claude directory
   -h, --help        Show this help
   -v, --version     Show version
@@ -35,6 +37,7 @@ async function main() {
       days: { type: 'string', short: 'd' },
       top: { type: 'string', short: 't' },
       json: { type: 'boolean', short: 'j' },
+      png: { type: 'string', short: 'p' },
       dir: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
@@ -106,6 +109,13 @@ async function main() {
     console.log(JSON.stringify(results, mapReplacer, 2));
   } else {
     render(results);
+  }
+
+  if (values.png) {
+    const pngBuffer = await generateCard(results);
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(values.png, pngBuffer);
+    console.log(`\nShare card saved to ${values.png}`);
   }
 }
 
