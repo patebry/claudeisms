@@ -1,6 +1,8 @@
 import { parseArgs } from 'node:util';
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { existsSync, writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { getDefaultClaudeDir, scanConversations } from './scanner.js';
 import { parseConversation } from './parser.js';
 import { Analyzer } from './analyzer.js';
@@ -113,17 +115,23 @@ async function main() {
     render(results);
   }
 
-  if (!values['no-png'] && !values.json) {
-    const pngPath = values.png || 'claudeisms.png';
+  if (!values['no-png'] && !values.json || values.png) {
+    const pngPath = values.png || join(tmpdir(), 'claudeisms.png');
     const pngBuffer = await generateCard(results);
-    const { writeFileSync } = await import('node:fs');
     writeFileSync(pngPath, pngBuffer);
     console.log(`\n📸 Share card saved to ${pngPath}`);
-  } else if (values.png) {
-    const pngBuffer = await generateCard(results);
-    const { writeFileSync } = await import('node:fs');
-    writeFileSync(values.png, pngBuffer);
-    console.log(`\n📸 Share card saved to ${values.png}`);
+
+    // Auto-open the image if we saved to tmp (not a custom path)
+    if (!values.png) {
+      try {
+        const cmd = process.platform === 'darwin' ? 'open'
+          : process.platform === 'win32' ? 'start'
+          : 'xdg-open';
+        execSync(`${cmd} "${pngPath}"`, { stdio: 'ignore' });
+      } catch {
+        // Silently fail if we can't open — the path is already printed
+      }
+    }
   }
 }
 
