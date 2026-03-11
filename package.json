@@ -1,6 +1,6 @@
 {
   "name": "claudeisms",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spotify Wrapped for Claude Code -- discover your most-used phrases, verbal tics, and claudeisms",
   "type": "module",
   "main": "./dist/index.js",
