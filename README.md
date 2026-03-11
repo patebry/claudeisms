@@ -96,6 +96,18 @@ claudeisms scans your Claude Code conversation history and generates a beautiful
            claudeisms v0.1.0 · generated Mar 11, 2026
 ```
 
+## Share Card
+
+Generate a 1200x630 PNG share card — perfect for Twitter, LinkedIn, or your team Slack:
+
+```bash
+npx claudeisms --png my-wrapped.png
+```
+
+![Example share card](https://raw.githubusercontent.com/patebry/claudeisms/main/examples/card.png)
+
+Dark theme with gradient bars, stat tiles, hourly activity chart, and your archetype front and center.
+
 ## Options
 
 | Flag | Description |
@@ -103,6 +115,7 @@ claudeisms scans your Claude Code conversation history and generates a beautiful
 | `-d, --days <n>` | Only scan last N days |
 | `-t, --top <n>` | Show top N phrases (default: 10) |
 | `-j, --json` | Output as JSON |
+| `-p, --png <path>` | Export a shareable PNG card |
 | `--dir <path>` | Custom Claude data directory |
 
 ## How It Works

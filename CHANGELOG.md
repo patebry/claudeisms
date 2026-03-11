@@ -8,5 +8,6 @@ Initial release.
 - 8 personality archetypes (The Narrator, The Apologizer, The Eager Helper, etc.)
 - Streaming JSONL parser for efficient log analysis
 - Beautiful terminal output with gradient ASCII art and bar charts
+- Shareable 1200x630 PNG card generation (`--png`)
 - JSON output mode for scripting
 - Configurable date range and top-N filtering
