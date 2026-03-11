@@ -1,0 +1,40 @@
+{
+  "name": "claudeisms",
+  "version": "0.1.0",
+  "description": "Spotify Wrapped for Claude Code -- discover your most-used phrases, verbal tics, and claudeisms",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "claudeisms": "./dist/index.js"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["claude", "claude-code", "cli", "wrapped", "stats", "ai", "anthropic", "llm", "analysis", "coding-assistant", "developer-tools"],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "patebryant",
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "picocolors": "^1.1.1",
+    "gradient-string": "^3.0.0",
+    "boxen": "^8.0.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^22.0.0"
+  }
+}
