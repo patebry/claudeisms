@@ -18,12 +18,12 @@
   "keywords": ["claude", "claude-code", "cli", "wrapped", "stats", "ai", "anthropic", "llm", "analysis", "coding-assistant", "developer-tools"],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/patebry/claudeisms.git"
   },
   "author": "patebryant",
-  "homepage": "",
+  "homepage": "https://github.com/patebry/claudeisms#readme",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/patebry/claudeisms/issues"
   },
   "license": "MIT",
   "dependencies": {
