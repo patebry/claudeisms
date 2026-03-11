@@ -25,23 +25,31 @@ function getVerbosityLabel(avg: number): string {
 }
 
 function getArchetype(result: AnalysisResult, archetypes: Archetype[]): Archetype {
-  // Score each archetype by summing up the category counts it cares about
+  // Get total across all categories for computing percentages
+  let totalAll = 0;
+  for (const count of result.categoryBreakdown.values()) {
+    totalAll += count;
+  }
+  if (totalAll === 0) {
+    return { name: 'The Mystery', description: 'Not enough data to determine your archetype', icon: '🔮', categories: [] as Category[] };
+  }
+
+  // Score each archetype by the AVERAGE PERCENTAGE of its categories
+  // This normalizes so categories with many phrases don't dominate
   let bestScore = -1;
   let bestArchetype = archetypes[0];
 
   for (const archetype of archetypes) {
     let score = 0;
     for (const cat of archetype.categories) {
-      score += result.categoryBreakdown.get(cat) ?? 0;
+      const catCount = result.categoryBreakdown.get(cat) ?? 0;
+      score += catCount / totalAll; // percentage of total
     }
+    score /= archetype.categories.length || 1; // average across archetype's categories
     if (score > bestScore) {
       bestScore = score;
       bestArchetype = archetype;
     }
-  }
-
-  if (bestScore === 0) {
-    return { name: 'The Mystery', description: 'Not enough data to determine your archetype', icon: '🔮', categories: [] as Category[] };
   }
 
   return bestArchetype;

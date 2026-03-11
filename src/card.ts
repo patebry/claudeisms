@@ -54,25 +54,32 @@ function roundRect(
 }
 
 function getArchetype(result: AnalysisResult, archetypes: Archetype[]): Archetype {
-  let best = archetypes[0];
-  let bestScore = -1;
-  for (const arch of archetypes) {
-    let score = 0;
-    for (const cat of arch.categories) {
-      score += result.categoryBreakdown.get(cat) ?? 0;
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      best = arch;
-    }
+  let totalAll = 0;
+  for (const count of result.categoryBreakdown.values()) {
+    totalAll += count;
   }
-  if (bestScore === 0) {
+  if (totalAll === 0) {
     return {
       name: 'The Mystery',
       description: 'Not enough data yet',
       icon: '🔮',
       categories: [] as Category[],
     };
+  }
+
+  let best = archetypes[0];
+  let bestScore = -1;
+  for (const arch of archetypes) {
+    let score = 0;
+    for (const cat of arch.categories) {
+      const catCount = result.categoryBreakdown.get(cat) ?? 0;
+      score += catCount / totalAll;
+    }
+    score /= arch.categories.length || 1;
+    if (score > bestScore) {
+      bestScore = score;
+      best = arch;
+    }
   }
   return best;
 }

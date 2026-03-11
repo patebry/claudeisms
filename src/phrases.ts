@@ -122,15 +122,16 @@ export const PHRASES: PhrasePattern[] = [
   },
   {
     id: 'let-me-check',
-    pattern: /\blet me check\b/gi,
-    displayName: 'Let me check',
+    pattern: /\blet me check (that|this|if|whether|the)\b/gi,
+    displayName: 'Let me check...',
     category: 'narration',
   },
   {
     id: 'now-let-me',
-    pattern: /\bnow let me\b/gi,
-    displayName: 'Now let me',
+    pattern: /^now,? let me\b/gim,
+    displayName: 'Now let me...',
     category: 'narration',
+    funFact: 'The classic Claude scene transition',
   },
   {
     id: 'ill-go-ahead-and',
@@ -257,7 +258,7 @@ export const PHRASES: PhrasePattern[] = [
   },
   {
     id: 'perfect',
-    pattern: /\bperfect[!.]?/gi,
+    pattern: /^perfect[!.]/gim,
     displayName: 'Perfect!',
     category: 'enthusiasm',
   },
