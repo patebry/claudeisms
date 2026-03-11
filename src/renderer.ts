@@ -24,12 +24,12 @@ function getVerbosityLabel(avg: number): string {
   return 'Novelist';
 }
 
-function getArchetype(result: AnalysisResult): Archetype {
+function getArchetype(result: AnalysisResult, archetypes: Archetype[]): Archetype {
   // Score each archetype by summing up the category counts it cares about
   let bestScore = -1;
-  let bestArchetype = ARCHETYPES[0];
+  let bestArchetype = archetypes[0];
 
-  for (const archetype of ARCHETYPES) {
+  for (const archetype of archetypes) {
     let score = 0;
     for (const cat of archetype.categories) {
       score += result.categoryBreakdown.get(cat) ?? 0;
@@ -112,27 +112,37 @@ function sectionTitle(title: string): string {
   return `\n${line} ${pc.bold(pc.cyan(title))} ${pc.dim('\u2500'.repeat(Math.max(0, WIDTH - title.length - 6)))}\n`;
 }
 
-function renderHeader(): string {
-  const asciiArt = [
+function renderHeader(title?: string): string {
+  const claudeArt = [
     '   _____ _                 _      _                   ',
     '  / ____| |               | |    (_)                  ',
     ' | |    | | __ _ _   _  __| | ___ _ ___ _ __ ___  ___ ',
     ' | |    | |/ _` | | | |/ _` |/ _ \\ / __| \'_ ` _ \\/ __|',
     ' | |____| | (_| | |_| | (_| |  __/ \\__ \\ | | | | \\__ \\',
     '  \\_____|_|\\__,_|\\__,_|\\__,_|\\___|_|___/_| |_| |_|___/',
-  ].join('\n');
+  ];
+  const codexArt = [
+    '   _____          _           _                    ',
+    '  / ____|        | |         (_)                   ',
+    ' | |     ___   __| | _____  ___ ___ _ __ ___  ___ ',
+    ' | |    / _ \\ / _` |/ _ \\ \\/ / / __| \'_ ` _ \\/ __|',
+    ' | |___| (_) | (_| |  __/>  <| \\__ \\ | | | | \\__ \\',
+    '  \\_____\\___/ \\__,_|\\___/_/\\_\\_|___/_| |_| |_|___/',
+  ];
+  const asciiArt = (title === 'CODEXISMS' ? codexArt : claudeArt).join('\n');
 
-  const title = purpleOrange(asciiArt);
+  const banner = purpleOrange(asciiArt);
 
   const subtitle = center(
-    pc.dim('~ Your Claude Code Wrapped ~'),
+    pc.dim(title === 'CODEXISMS' ? '~ Your Codex Wrapped ~' : '~ Your Claude Code Wrapped ~'),
     WIDTH,
   );
 
-  return '\n' + title + '\n\n' + subtitle;
+  return '\n' + banner + '\n\n' + subtitle;
 }
 
-function renderBigNumbers(result: AnalysisResult): string {
+function renderBigNumbers(result: AnalysisResult, title?: string): string {
+  const agent = title === 'CODEXISMS' ? 'Codex' : 'Claude';
   const dateStr =
     formatDate(result.dateRange.first) +
     '  \u2192  ' +
@@ -143,7 +153,7 @@ function renderBigNumbers(result: AnalysisResult): string {
     center(pc.dim(dateStr), WIDTH - 4),
     '',
     `  ${pc.bold(pc.cyan(formatNumber(result.totalConversations)))}  conversations`,
-    `  ${pc.bold(pc.magenta(formatNumber(result.totalMessages)))}  messages from Claude`,
+    `  ${pc.bold(pc.magenta(formatNumber(result.totalMessages)))}  messages from ${agent}`,
     `  ${pc.bold(pc.yellow(formatNumber(result.totalWords)))}  words generated`,
     '',
   ];
@@ -157,14 +167,14 @@ function renderBigNumbers(result: AnalysisResult): string {
   });
 }
 
-function renderTopPhrases(result: AnalysisResult): string {
+function renderTopPhrases(result: AnalysisResult, title?: string): string {
   const phrases = result.topPhrases.slice(0, 10);
   if (phrases.length === 0) return '';
 
   const maxCount = phrases[0].count;
   const lines: string[] = [];
 
-  lines.push(sectionTitle('TOP CLAUDEISMS'));
+  lines.push(sectionTitle(title === 'CODEXISMS' ? 'TOP CODEXISMS' : 'TOP CLAUDEISMS'));
 
   for (const phrase of phrases) {
     const badge = pad(rankBadge(phrase.rank), 8);
@@ -187,8 +197,8 @@ function renderTopPhrases(result: AnalysisResult): string {
   return lines.join('\n');
 }
 
-function renderArchetype(result: AnalysisResult): string {
-  const arch = getArchetype(result);
+function renderArchetype(result: AnalysisResult, archetypes: Archetype[]): string {
+  const arch = getArchetype(result, archetypes);
 
   const inner = [
     '',
@@ -221,7 +231,8 @@ function renderArchetype(result: AnalysisResult): string {
   return header + '\n' + box;
 }
 
-function renderFunStats(result: AnalysisResult): string {
+function renderFunStats(result: AnalysisResult, title?: string): string {
+  const agent = title === 'CODEXISMS' ? 'Codex' : 'Claude';
   const lines: string[] = [];
   lines.push(sectionTitle('FUN STATS'));
 
@@ -229,12 +240,12 @@ function renderFunStats(result: AnalysisResult): string {
 
   // Apologeticness
   lines.push(
-    `  ${bullet}  ${pc.red('\u2665')} Claude apologized to you ${pc.bold(pc.red(formatNumber(result.apologyCount)))} times`,
+    `  ${bullet}  ${pc.red('\u2665')} ${agent} apologized to you ${pc.bold(pc.red(formatNumber(result.apologyCount)))} times`,
   );
 
   // Agreement
   lines.push(
-    `  ${bullet}  ${pc.green('\u2714')} Claude agreed with you ${pc.bold(pc.green(formatNumber(result.agreementCount)))} times`,
+    `  ${bullet}  ${pc.green('\u2714')} ${agent} agreed with you ${pc.bold(pc.green(formatNumber(result.agreementCount)))} times`,
   );
 
   // Verbosity
@@ -344,15 +355,16 @@ function renderFunStats(result: AnalysisResult): string {
   return lines.join('\n');
 }
 
-function renderFooter(): string {
+function renderFooter(title?: string): string {
   const now = new Date();
   const dateStr = formatDate(now);
+  const brand = title === 'CODEXISMS' ? 'codexisms' : 'claudeisms';
   return (
     '\n' +
     DIVIDER +
     '\n' +
     center(
-      pc.dim(`claudeisms v0.1.0 \u00b7 generated ${dateStr}`),
+      pc.dim(`${brand} v0.1.0 \u00b7 generated ${dateStr}`),
       WIDTH,
     ) +
     '\n'
@@ -361,16 +373,17 @@ function renderFooter(): string {
 
 // ── Main export ──────────────────────────────────────────────────
 
-export function render(result: AnalysisResult): void {
+export function render(result: AnalysisResult, archetypes?: Archetype[], title?: string): void {
+  const resolvedArchetypes = archetypes ?? ARCHETYPES;
   const output = [
     '',
-    renderHeader(),
+    renderHeader(title),
     '',
-    renderBigNumbers(result),
-    renderTopPhrases(result),
-    renderArchetype(result),
-    renderFunStats(result),
-    renderFooter(),
+    renderBigNumbers(result, title),
+    renderTopPhrases(result, title),
+    renderArchetype(result, resolvedArchetypes),
+    renderFunStats(result, title),
+    renderFooter(title),
     '',
   ].join('\n');
 

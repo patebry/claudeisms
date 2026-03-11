@@ -53,10 +53,10 @@ function roundRect(
   ctx.closePath();
 }
 
-function getArchetype(result: AnalysisResult): Archetype {
-  let best = ARCHETYPES[0];
+function getArchetype(result: AnalysisResult, archetypes: Archetype[]): Archetype {
+  let best = archetypes[0];
   let bestScore = -1;
-  for (const arch of ARCHETYPES) {
+  for (const arch of archetypes) {
     let score = 0;
     for (const cat of arch.categories) {
       score += result.categoryBreakdown.get(cat) ?? 0;
@@ -110,7 +110,7 @@ function drawBackground(ctx: SKRSContext2D, w: number, h: number) {
   ctx.fillRect(0, 0, w, h);
 }
 
-function drawHeader(ctx: SKRSContext2D, result: AnalysisResult) {
+function drawHeader(ctx: SKRSContext2D, result: AnalysisResult, title?: string) {
   // Title
   ctx.save();
   ctx.font = 'bold 18px Inter, sans-serif';
@@ -118,7 +118,7 @@ function drawHeader(ctx: SKRSContext2D, result: AnalysisResult) {
   ctx.letterSpacing = '4px';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('CLAUDEISMS', 60, 45);
+  ctx.fillText(title || 'CLAUDEISMS', 60, 45);
 
   // Gradient underline
   const lineGrad = ctx.createLinearGradient(60, 68, 220, 68);
@@ -141,8 +141,8 @@ function drawHeader(ctx: SKRSContext2D, result: AnalysisResult) {
   ctx.restore();
 }
 
-function drawHero(ctx: SKRSContext2D, result: AnalysisResult) {
-  const arch = getArchetype(result);
+function drawHero(ctx: SKRSContext2D, result: AnalysisResult, archetypes: Archetype[]) {
+  const arch = getArchetype(result, archetypes);
 
   ctx.save();
   // Archetype name
@@ -363,7 +363,7 @@ function drawActivity(ctx: SKRSContext2D, result: AnalysisResult) {
   ctx.restore();
 }
 
-function drawFooter(ctx: SKRSContext2D, w: number, h: number) {
+function drawFooter(ctx: SKRSContext2D, w: number, h: number, title?: string) {
   ctx.save();
 
   // Separator line
@@ -375,7 +375,7 @@ function drawFooter(ctx: SKRSContext2D, w: number, h: number) {
   ctx.stroke();
 
   // Center pill: "npx claudeisms"
-  const pillText = 'npx claudeisms';
+  const pillText = title === 'CODEXISMS' ? 'npx codexisms' : 'npx claudeisms';
   ctx.font = 'bold 14px monospace';
   const pillMetrics = ctx.measureText(pillText);
   const pillTextW = pillMetrics.width;
@@ -415,7 +415,7 @@ function drawFooter(ctx: SKRSContext2D, w: number, h: number) {
 
 // ── Main Export ──────────────────────────────────────────────────
 
-export async function generateCard(result: AnalysisResult): Promise<Buffer> {
+export async function generateCard(result: AnalysisResult, archetypes?: Archetype[], title?: string): Promise<Buffer> {
   // Register bundled Inter font if available
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const fontsDir = join(__dirname, '..', 'fonts');
@@ -430,12 +430,12 @@ export async function generateCard(result: AnalysisResult): Promise<Buffer> {
   const ctx = canvas.getContext('2d');
 
   drawBackground(ctx, WIDTH, HEIGHT);
-  drawHeader(ctx, result);
-  drawHero(ctx, result);
+  drawHeader(ctx, result, title);
+  drawHero(ctx, result, archetypes ?? ARCHETYPES);
   drawPhrases(ctx, result);
   drawStats(ctx, result);
   drawActivity(ctx, result);
-  drawFooter(ctx, WIDTH, HEIGHT);
+  drawFooter(ctx, WIDTH, HEIGHT, title);
 
   return canvas.toBuffer('image/png');
 }

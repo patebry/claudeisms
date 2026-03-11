@@ -1,8 +1,8 @@
 # claudeisms
 
-> Spotify Wrapped, but for your Claude Code conversations
+> Spotify Wrapped for your AI coding conversations
 
-Ever wonder how many times Claude said "You're absolutely right" to you? Or how often it apologized? Now you can find out.
+Ever wonder how many times Claude said "You're absolutely right" to you? Or how often Codex said "Sure thing!"? Now you can find out. Works with both Claude Code and OpenAI Codex CLI conversations.
 
 ## Quick Start
 
@@ -110,6 +110,16 @@ npx claudeisms --no-png           # skip card generation
 
 Dark theme with gradient bars, stat tiles, hourly activity chart, and your archetype front and center.
 
+## Codex Support
+
+Also works with OpenAI's Codex CLI:
+
+```bash
+npx claudeisms --codex
+```
+
+Same beautiful report, but with GPT-specific phrases like "Sure thing!", "Let's dive in!", and "This should do the trick!". Get your own Codex archetype — are you talking to The Hype Man, The Diver, or The Bro?
+
 ## Options
 
 | Flag | Description |
@@ -119,6 +129,7 @@ Dark theme with gradient bars, stat tiles, hourly activity chart, and your arche
 | `-j, --json` | Output as JSON |
 | `-p, --png <path>` | Save PNG card to custom path (default: claudeisms.png) |
 | `--no-png` | Skip PNG card generation |
+| `--codex` | Scan Codex CLI conversations instead of Claude Code |
 | `--dir <path>` | Custom Claude data directory |
 
 ## How It Works

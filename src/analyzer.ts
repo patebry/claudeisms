@@ -1,4 +1,4 @@
-import type { AnalysisResult, Category, RankedPhrase } from './types.js';
+import type { AnalysisResult, Category, PhrasePattern, RankedPhrase } from './types.js';
 import type { ParsedMessage } from './parser.js';
 import { PHRASES } from './phrases.js';
 
@@ -17,6 +17,7 @@ const SELF_CORRECTION_RE =
 export class Analyzer {
   // ---- internal accumulators ----
 
+  private phrases: PhrasePattern[];
   private messageCount = 0;
   private wordCount = 0;
   private charCount = 0;
@@ -44,6 +45,10 @@ export class Analyzer {
   private emojiMap = new Map<string, number>();
 
   // ------------------------------------------------------------------ public
+
+  constructor(phrases?: PhrasePattern[]) {
+    this.phrases = phrases ?? PHRASES;
+  }
 
   /**
    * Process a single parsed message. This is the hot path -- every message
@@ -100,7 +105,7 @@ export class Analyzer {
     this.proseChars += text.length - codeInMessage;
 
     // ---- phrase detection (single pass over all patterns) ----
-    for (const phrase of PHRASES) {
+    for (const phrase of this.phrases) {
       // Reset lastIndex for global regexes before matchAll (matchAll creates
       // a fresh iterator, but we still reset to be safe with stateful regexes).
       phrase.pattern.lastIndex = 0;
@@ -151,8 +156,8 @@ export class Analyzer {
       (a, b) => b[1] - a[1],
     );
 
-    const phraseIndex = new Map<string, (typeof PHRASES)[number]>();
-    for (const p of PHRASES) {
+    const phraseIndex = new Map<string, PhrasePattern>();
+    for (const p of this.phrases) {
       phraseIndex.set(p.id, p);
     }
 

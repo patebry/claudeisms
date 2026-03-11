@@ -4,10 +4,14 @@ import { tmpdir } from 'node:os';
 import { existsSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { getDefaultClaudeDir, scanConversations } from './scanner.js';
+import { getDefaultCodexDir, scanCodexConversations } from './codex-scanner.js';
 import { parseConversation } from './parser.js';
+import { parseCodexConversation } from './codex-parser.js';
 import { Analyzer } from './analyzer.js';
 import { render } from './renderer.js';
 import { generateCard } from './card.js';
+import { PHRASES, ARCHETYPES } from './phrases.js';
+import { CODEX_PHRASES, CODEX_ARCHETYPES } from './codex-phrases.js';
 import type { ScanOptions } from './types.js';
 
 const VERSION = '0.2.0';
@@ -23,6 +27,7 @@ Options:
   -p, --png <path>  Save PNG card to custom path (default: claudeisms.png)
       --no-png      Skip PNG card generation
       --dir <path>  Custom Claude directory
+      --codex       Analyze Codex CLI instead of Claude Code
   -h, --help        Show this help
   -v, --version     Show version
 `;
@@ -43,6 +48,7 @@ async function main() {
       png: { type: 'string', short: 'p' },
       'no-png': { type: 'boolean' },
       dir: { type: 'string' },
+      codex: { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },
@@ -58,7 +64,9 @@ async function main() {
     process.exit(0);
   }
 
-  const claudeDir = values.dir ?? getDefaultClaudeDir();
+  const isCodex = values.codex ?? false;
+  const claudeDir = values.dir ?? (isCodex ? getDefaultCodexDir() : getDefaultClaudeDir());
+  const title = isCodex ? 'CODEXISMS' : 'CLAUDEISMS';
   const topN = values.top ? parseInt(values.top, 10) : 10;
   const days = values.days ? parseInt(values.days, 10) : undefined;
 
@@ -76,26 +84,30 @@ async function main() {
     ...(days !== undefined && { days }),
   };
 
-  const projectsDir = join(scanOptions.claudeDir, 'projects');
-  if (!existsSync(projectsDir)) {
-    console.error(`No Claude Code data found at ${scanOptions.claudeDir}`);
-    console.error('Make sure you have Claude Code installed and have had some conversations.');
+  const dataDir = isCodex ? join(claudeDir, 'sessions') : join(claudeDir, 'projects');
+  if (!existsSync(dataDir)) {
+    console.error(`No ${isCodex ? 'Codex' : 'Claude Code'} data found at ${claudeDir}`);
+    console.error(`Make sure you have ${isCodex ? 'Codex CLI' : 'Claude Code'} installed and have had some conversations.`);
     process.exit(1);
   }
 
   process.stderr.write('Scanning conversations...\n');
 
-  const analyzer = new Analyzer();
+  const phrases = isCodex ? CODEX_PHRASES : PHRASES;
+  const archetypes = isCodex ? CODEX_ARCHETYPES : ARCHETYPES;
+  const analyzer = new Analyzer(phrases);
   let processed = 0;
 
-  for await (const filePath of scanConversations(scanOptions)) {
+  const scanner = isCodex ? scanCodexConversations(scanOptions) : scanConversations(scanOptions);
+  const parse = isCodex ? parseCodexConversation : parseConversation;
+
+  for await (const filePath of scanner) {
     try {
-      const messages = parseConversation(filePath);
+      const messages = parse(filePath);
       await analyzer.processStream(messages);
     } catch {
       // Skip files that fail to parse
     }
-
     processed++;
     process.stderr.write(`\rAnalyzed ${processed} conversations...`);
   }
@@ -112,12 +124,12 @@ async function main() {
   if (values.json) {
     console.log(JSON.stringify(results, mapReplacer, 2));
   } else {
-    render(results);
+    render(results, archetypes, title);
   }
 
   if (!values['no-png'] && !values.json || values.png) {
-    const pngPath = values.png || join(tmpdir(), 'claudeisms.png');
-    const pngBuffer = await generateCard(results);
+    const pngPath = values.png || join(tmpdir(), `${title.toLowerCase()}.png`);
+    const pngBuffer = await generateCard(results, archetypes, title);
     writeFileSync(pngPath, pngBuffer);
     console.log(`\n📸 Share card saved to ${pngPath}`);
 
